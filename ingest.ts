@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
@@ -9,8 +11,8 @@ import fs from 'fs-extra';
 import path from 'path';
 
 // Constants
-const VECTOR_STORE_DIR = path.join(appRootPath.path, 'data/vector/');
-const DOCUMENTS_DIR = path.join(appRootPath.path, 'data/documents/');
+const VECTOR_STORE_DIR = path.join(process.env.DATA_DIR ?? appRootPath.path, 'vector');
+const DOCUMENTS_DIR = path.join(process.env.DATA_DIR ?? appRootPath.path, 'documents');
 const TEXT_SPLITTER_CHUNK_SIZE = 1000;
 
 // Ensure data dirs exist
