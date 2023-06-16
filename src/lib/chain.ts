@@ -1,7 +1,7 @@
 import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { ConsoleCallbackHandler } from 'langchain/callbacks';
 import { RetrievalQAChain } from 'langchain/chains';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { PromptTemplate } from 'langchain/prompts';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
@@ -34,7 +34,7 @@ Answer in Markdown:`
 export const makeChain = (vectorstore: HNSWLib) => {
 	const model = new ChatOpenAI({
 		temperature: 0,
-		openAIApiKey: OPENAI_API_KEY,
+		openAIApiKey: env.OPENAI_API_KEY,
 		modelName: 'gpt-3.5-turbo',
 		streaming: false
 		// callbacks: [new ConsoleCallbackHandler()]
@@ -54,7 +54,7 @@ export const makeChain = (vectorstore: HNSWLib) => {
 export const loadVectorstore = () => {
 	const vectorstore = HNSWLib.load(
 		VECTOR_STORE_DIR,
-		new OpenAIEmbeddings({ openAIApiKey: OPENAI_API_KEY })
+		new OpenAIEmbeddings({ openAIApiKey: env.OPENAI_API_KEY })
 	);
 	console.log('loaded vectorstore');
 	return vectorstore;
