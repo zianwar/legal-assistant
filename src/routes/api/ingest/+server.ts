@@ -10,8 +10,6 @@ import appRootPath from 'app-root-path';
 import fs from 'fs-extra';
 import path from 'path';
 
-console.log('env', env);
-
 // Constants
 const TEXT_SPLITTER_CHUNK_SIZE = 1000;
 const VECTOR_STORE_DIR = env.DATA_DIR
