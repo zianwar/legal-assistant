@@ -87,7 +87,10 @@ export const run = async () => {
 
 	// Create the vectorstore
 	console.log('Creating vector store records from documents');
-	const vectorStore = await HNSWLib.fromDocuments(chunkedDocs, new OpenAIEmbeddings());
+	const vectorStore = await HNSWLib.fromDocuments(
+		chunkedDocs,
+		new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY })
+	);
 
 	// Save the vector store to a directory
 	await vectorStore.save(VECTOR_STORE_DIR);
