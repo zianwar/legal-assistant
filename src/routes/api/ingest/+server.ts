@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
@@ -6,7 +6,6 @@ import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { MarkdownTextSplitter } from 'langchain/text_splitter';
 import type { Document } from 'langchain/document';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
-import appRootPath from 'app-root-path';
 import fs from 'fs-extra';
 import { VECTOR_STORE_DIR, DOCUMENTS_DIR } from '$lib/chain';
 import path from 'path';
@@ -14,7 +13,7 @@ import path from 'path';
 // Constants
 const TEXT_SPLITTER_CHUNK_SIZE = 1000;
 
-console.log({ VECTOR_STORE_DIR, DOCUMENTS_DIR });
+console.log({ VECTOR_STORE_DIR, DOCUMENTS_DIR, NODE_OPTIONS: env.NODE_OPTIONS });
 
 // Ensure data dirs exist
 fs.ensureDirSync(DOCUMENTS_DIR);
