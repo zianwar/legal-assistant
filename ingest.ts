@@ -10,6 +10,8 @@ import appRootPath from 'app-root-path';
 import fs from 'fs-extra';
 import path from 'path';
 
+console.log(process.env);
+
 // Constants
 const VECTOR_STORE_DIR = path.join(process.env.DATA_DIR ?? appRootPath.path, 'vector');
 const DOCUMENTS_DIR = path.join(process.env.DATA_DIR ?? appRootPath.path, 'documents');
