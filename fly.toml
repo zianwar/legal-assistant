@@ -1,15 +1,14 @@
-# fly.toml file generated for legal-assistant on 2023-06-15T22:38:48-07:00
-
 app = "legal-assistant"
 kill_signal = "SIGINT"
 kill_timeout = 5
-primary_region = "sea"
 processes = []
 
 [env]
+  PRIMARY_REGION = "sea"
 
 [experimental]
   auto_rollback = true
+  private_network = true
 
 [[services]]
   http_checks = []
