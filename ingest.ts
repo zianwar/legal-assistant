@@ -79,7 +79,6 @@ export const run = async () => {
 	});
 	const docs = await directoryLoader.load();
 	formatDocumentSources(docs);
-	console.log('Loaded documents', docs.length, docs);
 
 	// Split the text into chunks
 	console.log('Splitting documents into chunks');

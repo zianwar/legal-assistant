@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "npm run ingest && vite build",
+		"build": "tsx -r dotenv/config ingest.ts && vite build",
 		"start": "node build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
