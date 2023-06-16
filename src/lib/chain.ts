@@ -2,9 +2,13 @@ import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { ConsoleCallbackHandler } from 'langchain/callbacks';
 import { RetrievalQAChain } from 'langchain/chains';
 import { OPENAI_API_KEY } from '$env/static/private';
-import type { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { PromptTemplate } from 'langchain/prompts';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import appRootPath from 'app-root-path';
+import path from 'path';
 
+const VECTOR_STORE_DIR = path.join(appRootPath.path, 'data/vector/');
 const CONDENSE_PROMPT =
 	PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 
@@ -27,28 +31,31 @@ Question: {question}
 Answer in Markdown:`
 );
 
-export const makeChain = (vectorstore: HNSWLib, onTokenStream?: (token: string) => void) => {
+export const makeChain = (vectorstore: HNSWLib) => {
 	const model = new ChatOpenAI({
 		temperature: 0,
 		openAIApiKey: OPENAI_API_KEY,
 		modelName: 'gpt-3.5-turbo',
-		streaming: true,
-		callbacks: [
-			new ConsoleCallbackHandler(),
-			{
-				handleLLMNewToken(token: string) {
-					if (onTokenStream) {
-						onTokenStream(token);
-					}
-				}
-			}
-		]
+		streaming: false
+		// callbacks: [new ConsoleCallbackHandler()]
 	});
 
 	// Create the chain
 	// https://js.langchain.com/docs/modules/chains/index_related_chains/retrieval_qa
-	return RetrievalQAChain.fromLLM(model, vectorstore.asRetriever(), {
+	const chain = RetrievalQAChain.fromLLM(model, vectorstore.asRetriever(), {
 		prompt: QA_PROMPT,
 		returnSourceDocuments: true
 	});
+	console.log('Created chain');
+
+	return chain;
+};
+
+export const loadVectorstore = () => {
+	const vectorstore = HNSWLib.load(
+		VECTOR_STORE_DIR,
+		new OpenAIEmbeddings({ openAIApiKey: OPENAI_API_KEY })
+	);
+	console.log('loaded vectorstore');
+	return vectorstore;
 };

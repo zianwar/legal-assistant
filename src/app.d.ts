@@ -5,8 +5,9 @@ declare global {
 		interface MessageBody {
 			question: string;
 		}
-		interface Error {
-			message: string;
+		interface ChatResponse {
+			answer: string;
+			error: string?;
 		}
 		// interface Locals {}
 		// interface PageData {}
