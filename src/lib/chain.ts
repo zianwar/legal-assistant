@@ -8,7 +8,13 @@ import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import appRootPath from 'app-root-path';
 import path from 'path';
 
-const VECTOR_STORE_DIR = path.join(appRootPath.path, 'data/vector/');
+export const VECTOR_STORE_DIR = env.DATA_DIR
+	? path.join(env.DATA_DIR, 'vector')
+	: path.join(appRootPath.path, 'data', 'vector');
+export const DOCUMENTS_DIR = env.DATA_DIR
+	? path.join(env.DATA_DIR, 'documents')
+	: path.join(appRootPath.path, 'data', 'documents');
+
 const CONDENSE_PROMPT =
 	PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 

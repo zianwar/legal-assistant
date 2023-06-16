@@ -8,16 +8,11 @@ import type { Document } from 'langchain/document';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 import appRootPath from 'app-root-path';
 import fs from 'fs-extra';
+import { VECTOR_STORE_DIR, DOCUMENTS_DIR } from '$lib/chain';
 import path from 'path';
 
 // Constants
 const TEXT_SPLITTER_CHUNK_SIZE = 1000;
-const VECTOR_STORE_DIR = env.DATA_DIR
-	? path.join(env.DATA_DIR, 'vector')
-	: path.join(appRootPath.path, 'data', 'vector');
-const DOCUMENTS_DIR = env.DATA_DIR
-	? path.join(env.DATA_DIR, 'documents')
-	: path.join(appRootPath.path, 'data', 'documents');
 
 console.log({ VECTOR_STORE_DIR, DOCUMENTS_DIR });
 
