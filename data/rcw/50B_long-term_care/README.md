@@ -1,2 +1,0 @@
-# 50B LONG-TERM CARE
-

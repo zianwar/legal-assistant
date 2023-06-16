@@ -1,2 +1,0 @@
-# 23 CORPORATIONS AND ASSOCIATIONS (PROFIT) (Business Corporation Act: See Title 23B RCW)
-

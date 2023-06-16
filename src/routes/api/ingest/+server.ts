@@ -24,17 +24,27 @@ export const GET = async ({ url }) => {
 	try {
 		const key = String(url.searchParams.get('key'));
 		if (key !== env.INGEST_KEY) {
-			return json({ success: false, error: 'Invalid credentials' }, { status: 400 });
+			return json({ success: false, error: 'Invalid ingest key' }, { status: 400 });
 		}
 
 		console.log(`Loading documents from ${DOCUMENTS_DIR}`);
 
 		// Load all .md files within the specified directory we want to do question answering over
-		const directoryLoader = new DirectoryLoader(DOCUMENTS_DIR, {
-			'.md': (path: string) => new TextLoader(path)
-		});
+		const recursive = true;
+		const directoryLoader = new DirectoryLoader(
+			DOCUMENTS_DIR,
+			{
+				'.md': (path: string) => new TextLoader(path)
+			},
+			recursive
+		);
 		const docs = await directoryLoader.load();
-		formatDocumentSources(docs);
+		console.log(`Loaded ${docs.length} documents`);
+
+		// formatDocumentSources(docs);
+		if (!docs || !docs.length) {
+			return json({ error: 'Missing docs', success: false });
+		}
 
 		// Split the text into chunks
 		console.log('Splitting documents into chunks');
