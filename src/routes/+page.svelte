@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import Typingindicator from '$/lib/TypingIndicator.svelte';
+	import Typingindicator from '$/lib/typingindicator.svelte';
 	import clsx from 'clsx';
 	import { readableStreamStore } from '$/lib/readableStreamStore';
 	import sanitizeHtml from 'sanitize-html';
