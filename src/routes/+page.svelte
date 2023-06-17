@@ -42,9 +42,7 @@
 	}
 
 	const markdownToHtml = (str: string) => {
-		return linkify(
-			str.replaceAll('\n', '<br/>').replace(/\[([^\]]+)\]\(([^\)]+)\)/, '<a href="$2">$1</a>')
-		);
+		return linkify(str.replaceAll('\n', '<br/>').replace(/\[([^\]]+)\]\(([^\)]+)\)/, '$1'));
 	};
 </script>
 
