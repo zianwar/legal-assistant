@@ -1,5 +1,6 @@
 import { loadVectorstore, makeChain } from '$/lib/chain';
 import { error, json } from '@sveltejs/kit';
+import db from '$lib/database';
 
 export const POST = async ({ request }) => {
 	const body: App.MessageBody = await request.json();
@@ -18,7 +19,9 @@ export const POST = async ({ request }) => {
 					});
 
 					console.log('Answering query:', query);
-					await chain.call({ query });
+					const response = await chain.call({ query });
+					console.log('response', response);
+
 					controller.close();
 				} catch (error) {
 					console.log('error inside ReadableStream:', error);
