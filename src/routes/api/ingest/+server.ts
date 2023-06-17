@@ -11,7 +11,7 @@ import { VECTOR_STORE_DIR, DOCUMENTS_DIR } from '$lib/chain';
 import path from 'path';
 
 // Constants
-const TEXT_SPLITTER_CHUNK_SIZE = 1000;
+const TEXT_SPLITTER_CHUNK_SIZE = 1500;
 
 console.log({ VECTOR_STORE_DIR, DOCUMENTS_DIR, NODE_OPTIONS: env.NODE_OPTIONS });
 

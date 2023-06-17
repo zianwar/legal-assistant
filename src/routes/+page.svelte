@@ -48,13 +48,13 @@
 	};
 </script>
 
-<main class="lg:max-w-7xl px-8 mx-auto">
-	<div class="flex flex-col space-y-1 pb-8">
-		<h1 class="text-3xl font-bold">Legal Assistant!</h1>
+<main class="max-w-4xl px-8 mx-auto">
+	<div class="flex flex-col space-y-2 pb-8">
+		<h1 class="text-3xl font-black tracking-wide">Legal Assistant.</h1>
 		<p class="">Ask me any question about <b>Revised Code of Washington (RCW)</b>.</p>
 	</div>
 
-	<div class="flex flex-col space-y-6 lg:space-y-0 lg:space-x-6 lg:flex-row">
+	<div class="flex flex-col space-y-6">
 		<aside class="">
 			<form
 				class="flex flex-col space-y-4 md:min-w-[28rem] lg:min-w-[32rem] xl:min-w-[36rem] max-w-6xl"
@@ -62,26 +62,24 @@
 				method="POST"
 				action="/api/chat"
 			>
-				<span class="">
-					<textarea
-						rows="4"
+				<div class="flex align-center py-2 space-x-2">
+					<input
+						type="text"
 						placeholder="Type your question..."
 						name="question"
-						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
+						class="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
 					/>
-					<div class="mt-2 flex justify-start">
-						<button
-							disabled={isLoading}
-							type="submit"
-							class={clsx(
-								'block rounded-md border border-transparent px-8 py-2 text-sm font-medium text-white shadow-sm  focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2',
-								isLoading ? 'bg-neutral-400 cursor-wait' : 'bg-neutral-800 hover:bg-black'
-							)}
-						>
-							{isLoading ? 'Loading...' : 'Send'}
-						</button>
-					</div>
-				</span>
+					<button
+						disabled={isLoading}
+						type="submit"
+						class={clsx(
+							'block rounded-md border border-transparent px-8 py-2 text-sm font-medium text-white shadow-sm  focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2',
+							isLoading ? 'bg-neutral-400 cursor-wait' : 'bg-neutral-800 hover:bg-black'
+						)}
+					>
+						{isLoading ? 'Loading...' : 'Send'}
+					</button>
+				</div>
 			</form>
 		</aside>
 
@@ -91,7 +89,7 @@
 					<div in:fly={{ y: 50, duration: 800 }}>
 						<Typingindicator />
 					</div>
-				{:else}
+				{:else if answer.trim() !== ''}
 					<div in:fly={{ y: 50, duration: 800 }}>
 						{@html answer}
 					</div>
