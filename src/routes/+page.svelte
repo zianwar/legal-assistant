@@ -1,14 +1,19 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import Typingindicator from '$lib/typingindicator.svelte';
+	import Typingindicator from '$/lib/TypingIndicator.svelte';
 	import clsx from 'clsx';
-	import linkify from '$/lib/linkify';
+	import { readableStreamStore } from '$/lib/readableStreamStore';
+	import sanitizeHtml from 'sanitize-html';
+	import { marked } from 'marked';
+
 	const GENERIC_ERROR = 'An error happened, please try again later.';
+	const response = readableStreamStore();
 
 	let answer = '';
 	let isLoading = false;
 
 	async function handleSubmit(this: HTMLFormElement) {
+		if ($response.loading) return;
 		const formData: FormData = new FormData(this);
 		const question = formData.get('question') as string;
 
@@ -17,32 +22,25 @@
 		try {
 			isLoading = true;
 			console.log('sending request to /api/chat');
-			const response = await fetch('/api/chat', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ question })
-			});
+			const resp = response.request(
+				new Request('/api/chat', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ question })
+				})
+			);
 
-			const responseJson: App.ChatResponse = await response.json();
-			if (responseJson.error) {
-				console.log('Server returned error:', responseJson);
-				answer = responseJson.error || GENERIC_ERROR;
-			} else if (!responseJson || !responseJson.answer || responseJson.answer === '') {
-				console.log('Server returned empty response:', responseJson);
-				answer = GENERIC_ERROR;
-			} else {
-				answer = markdownToHtml(responseJson.answer || '');
-				console.log('Server returned answer:', { answer });
-			}
+			answer = (await resp) as string;
 		} catch (err) {
-			answer = `Error: ${err}`;
+			console.error(err);
+			answer = GENERIC_ERROR;
 		} finally {
 			isLoading = false;
 		}
 	}
 
 	const markdownToHtml = (str: string) => {
-		return linkify(str.replaceAll('\n', '<br/>').replace(/\[([^\]]+)\]\(([^\)]+)\)/, '$1'));
+		return sanitizeHtml(marked.parse(str));
 	};
 </script>
 
@@ -50,6 +48,7 @@
 	<div class="flex flex-col space-y-2 pb-8">
 		<h1 class="text-3xl font-black tracking-wide">Legal Assistant.</h1>
 		<p class="">Ask me any question about <b>Revised Code of Washington (RCW)</b>.</p>
+		<!-- <pre class="border p-4"><code>{JSON.stringify({ answer, response: $response }, null, 2)}</code></pre> -->
 	</div>
 
 	<div class="flex flex-col space-y-6">
@@ -83,14 +82,14 @@
 
 		<aside class="text-zinc-800">
 			{#await new Promise((res) => setTimeout(res, 1000)) then _}
-				{#if isLoading}
-					<div in:fly={{ y: 50, duration: 800 }}>
+				{#if $response.text !== ''}
+					{@html markdownToHtml($response.text)}
+				{:else if $response.loading}
+					<div in:fly={{ y: 50, duration: 600 }}>
 						<Typingindicator />
 					</div>
-				{:else if answer.trim() !== ''}
-					<div in:fly={{ y: 50, duration: 800 }}>
-						{@html answer}
-					</div>
+				{:else}
+					{@html markdownToHtml(answer)}
 				{/if}
 			{/await}
 		</aside>

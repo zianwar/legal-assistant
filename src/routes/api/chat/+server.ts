@@ -7,20 +7,30 @@ export const POST = async ({ request }) => {
 
 	try {
 		const query = body.question;
-
 		const vectorstore = await loadVectorstore();
-		const chain = makeChain(vectorstore);
 
-		console.log('Answering query:', query);
-		const modelResponse = await chain.call({ query });
-		const answer = modelResponse.text;
+		// Create a new readable stream of the chat response
+		const readableStream = new ReadableStream({
+			async start(controller) {
+				try {
+					const chain = makeChain(vectorstore, (token: string) => {
+						controller.enqueue(token);
+					});
 
-		// console.log('Model response:', {
-		// 	modelResponse,
-		// 	answer
-		// });
+					console.log('Answering query:', query);
+					await chain.call({ query });
+					controller.close();
+				} catch (error) {
+					console.log('error inside ReadableStream:', error);
+					controller.error(error);
+				}
+			}
+		});
 
-		return json({ answer });
+		// Create and return a response of the readable stream
+		return new Response(readableStream, {
+			headers: { 'Content-Type': 'text/plain' }
+		});
 	} catch (error) {
 		console.error(error);
 		return json(

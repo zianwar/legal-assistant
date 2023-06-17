@@ -22,6 +22,8 @@
 		"@tailwindcss/typography": "github:tailwindcss/typography",
 		"@types/app-root-path": "^1.2.5",
 		"@types/fs-extra": "^11.0.1",
+		"@types/marked": "^5.0.0",
+		"@types/sanitize-html": "^2.9.0",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.14",
@@ -47,6 +49,8 @@
 		"fs-extra": "^11.1.1",
 		"hnswlib-node": "^1.4.2",
 		"langchain": "^0.0.92",
-		"openai": "^3.2.1"
+		"marked": "^5.1.0",
+		"openai": "^3.2.1",
+		"sanitize-html": "^2.10.0"
 	}
 }

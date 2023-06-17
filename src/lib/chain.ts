@@ -15,15 +15,24 @@ export const DOCUMENTS_DIR = env.DATA_DIR
 	? path.join(env.DATA_DIR, 'documents')
 	: path.join(appRootPath.path, 'data', 'documents');
 
-const CONDENSE_PROMPT =
-	PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
+const QA_PROMPT_V1 =
+	PromptTemplate.fromTemplate(`You are an AI assistant for the Revised Code of Washington (RCW). The official law website is https://app.leg.wa.gov/RCW/. Use the following pieces of context to create a final answer with references ("SOURCES"). If you don't know the answer, say that you don't know, don't try to make up an answer. ALWAYS return a "SOURCES" part in your answer.
 
-Chat History:
-{chat_history}
-Follow Up Input: {question}
-Standalone question:`);
+This should be in the following format:
 
-const QA_PROMPT = PromptTemplate.fromTemplate(
+Question: [question here]
+Answer: [answer here]
+
+Begin!
+
+Context:
+---------
+{context}
+---------
+Question: {question}
+Answer:`);
+
+const QA_PROMPT_V2 = PromptTemplate.fromTemplate(
 	`You are an AI assistant for the Revised Code of Washington (RCW). The official law text is is located at https://app.leg.wa.gov/RCW/.
 You are given the following extracted parts of a long document and a question. Provide an answer with a hyperlink to the law text.
 You should only use hyperlinks that are explicitly listed as a source in the context. Do NOT make up a hyperlink that is not listed.
@@ -37,19 +46,45 @@ Question: {question}
 Answer in Markdown:`
 );
 
-export const makeChain = (vectorstore: HNSWLib) => {
+const QA_PROMPT_V3 = PromptTemplate.fromTemplate(`
+Given the following extracted parts of a long document and a question, create a final answer with references ("Sources").
+If you don't know the answer, just say that you don't know. Don't try to make up an answer. You should only use hyperlinks that are explicitly listed as a source in the context.
+ALWAYS return a list of "Sources" part in your answer formatted as list.
+
+Question: {question}
+=========
+{context}
+=========
+FINAL ANSWER in Markdown:`);
+
+export const makeChain = (vectorstore: HNSWLib, onTokenStream?: (token: string) => void) => {
+	const extraCallbacks = [];
+	if (env.DEBUG) {
+		console.log('Adding debug console callback');
+		extraCallbacks.push(new ConsoleCallbackHandler());
+	}
+
 	const model = new ChatOpenAI({
 		temperature: 0,
 		openAIApiKey: env.OPENAI_API_KEY,
 		modelName: 'gpt-3.5-turbo',
-		streaming: false
-		// callbacks: [new ConsoleCallbackHandler()]
+		streaming: true,
+		callbacks: [
+			{
+				handleLLMNewToken(token: string) {
+					if (onTokenStream) {
+						onTokenStream(token);
+					}
+				}
+			},
+			...extraCallbacks
+		]
 	});
 
 	// Create the chain
 	// https://js.langchain.com/docs/modules/chains/index_related_chains/retrieval_qa
 	const chain = RetrievalQAChain.fromLLM(model, vectorstore.asRetriever(), {
-		prompt: QA_PROMPT,
+		prompt: QA_PROMPT_V3,
 		returnSourceDocuments: true
 	});
 	console.log('Created chain');
