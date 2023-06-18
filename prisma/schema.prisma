@@ -6,13 +6,14 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
-model Query {
-  id        String   @id @default(uuid())
-  text      String   @unique
-  response  String
+model QA {
+  id        Int      @id @default(autoincrement())
+  question  String
+  answer    String
   createdAt DateTime @default(now())
 }

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-export function readableStreamStore() {
+export function ClientStreamStore() {
 	const { subscribe, set, update } = writable({ loading: false, text: '' });
 
 	async function request(request: Request) {

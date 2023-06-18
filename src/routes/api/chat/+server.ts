@@ -1,46 +1,31 @@
-import { loadVectorstore, makeChain } from '$/lib/chain';
+import { loadVectorstore } from '$/lib/chain';
 import { error, json } from '@sveltejs/kit';
 import db from '$lib/database';
+import { GENERIC_ERROR } from '$/lib/constants.js';
+import { StreamingTextResponse } from '$/lib/StreamingTextResponse';
 
 export const POST = async ({ request }) => {
 	const body: App.MessageBody = await request.json();
+
 	if (!body) throw error(400, 'Missing Data');
 
 	try {
-		const query = body.question;
+		const question = body.question;
 		const vectorstore = await loadVectorstore();
-
-		// Create a new readable stream of the chat response
-		const readableStream = new ReadableStream({
-			async start(controller) {
-				try {
-					const chain = makeChain(vectorstore, (token: string) => {
-						controller.enqueue(token);
-					});
-
-					console.log('Answering query:', query);
-					const response = await chain.call({ query });
-					console.log('response', response);
-
-					controller.close();
-				} catch (error) {
-					console.log('error inside ReadableStream:', error);
-					controller.error(error);
-				}
-			}
-		});
-
-		// Create and return a response of the readable stream
-		return new Response(readableStream, {
-			headers: { 'Content-Type': 'text/plain' }
+		return StreamingTextResponse(question, vectorstore, (answer: string) => {
+			saveQA(question, answer);
 		});
 	} catch (error) {
 		console.error(error);
-		return json(
-			{
-				error: 'Oups, an error happened, try again later.'
-			},
-			{ status: 500 }
-		);
+		return json({ error: GENERIC_ERROR }, { status: 500 });
+	}
+};
+
+const saveQA = async (question: string, answer: string) => {
+	try {
+		await db.qA.create({ data: { question, answer } });
+		console.log('saveQA', { question, answer });
+	} catch (error) {
+		console.log('Failed to save QA', error);
 	}
 };

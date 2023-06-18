@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import Typingindicator from '$/lib/typingindicator.svelte';
+	import Typingindicator from '$/lib/components/TypingIndicator.svelte';
 	import clsx from 'clsx';
-	import { readableStreamStore } from '$/lib/readableStreamStore';
+	import { ClientStreamStore } from '$/lib/ClientStreamStore';
 	import sanitizeHtml from 'sanitize-html';
 	import { marked } from 'marked';
 
 	const GENERIC_ERROR = 'An error happened, please try again later.';
-	const response = readableStreamStore();
+	const response = ClientStreamStore();
 
 	let answer = '';
 	let isLoading = false;
