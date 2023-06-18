@@ -11,8 +11,8 @@ export const POST = async ({ request }) => {
 	try {
 		const question = body.question;
 		const vectorstore = await loadVectorstore();
-		return StreamingTextResponse(question, vectorstore, (answer: string) => {
-			saveQA(question, answer);
+		return StreamingTextResponse(question, vectorstore, async (answer: string) => {
+			await saveQA(question, answer);
 		});
 	} catch (error) {
 		console.error(error);
