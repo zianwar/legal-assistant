@@ -24,15 +24,12 @@ export const StreamingTextResponse = (
 
 				console.log('Answering query:', query);
 				const response = await chain.call({ query });
-				console.log('response', response);
+
 				if (onAnswer) {
 					onAnswer(response.text);
 				}
-
-				// controller.close();
 			} catch (error) {
 				console.log('error inside ReadableStream:', error);
-				// controller.error(error);
 			}
 		}
 	});

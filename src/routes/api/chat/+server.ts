@@ -6,7 +6,6 @@ import { StreamingTextResponse } from '$/lib/StreamingTextResponse';
 
 export const POST = async ({ request }) => {
 	const body: App.MessageBody = await request.json();
-
 	if (!body) throw error(400, 'Missing Data');
 
 	try {
@@ -24,7 +23,6 @@ export const POST = async ({ request }) => {
 const saveQA = async (question: string, answer: string) => {
 	try {
 		await db.qA.create({ data: { question, answer } });
-		console.log('saveQA', { question, answer });
 	} catch (error) {
 		console.log('Failed to save QA', error);
 	}
