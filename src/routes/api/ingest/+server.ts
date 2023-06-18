@@ -7,8 +7,8 @@ import { MarkdownTextSplitter } from 'langchain/text_splitter';
 import type { Document } from 'langchain/document';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 import fs from 'fs-extra';
-import { VECTOR_STORE_DIR, DOCUMENTS_DIR } from '$lib/chain';
 import path from 'path';
+import { DOCUMENTS_DIR, VECTOR_STORE_DIR } from '$/lib/constants';
 
 // Constants
 const TEXT_SPLITTER_CHUNK_SIZE = 1500;
