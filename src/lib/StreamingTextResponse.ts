@@ -13,12 +13,6 @@ export const StreamingTextResponse = (
 				const chain = makeChain(vectorstore, {
 					handleLLMNewToken: async (token: string) => {
 						controller.enqueue(token);
-					},
-					handleChainEnd: async () => {
-						controller.close();
-					},
-					handleLLMError: async (e) => {
-						controller.error(e);
 					}
 				});
 
@@ -28,8 +22,11 @@ export const StreamingTextResponse = (
 				if (onAnswer) {
 					onAnswer(response.text);
 				}
+
+				controller.close();
 			} catch (error) {
 				console.log('error inside ReadableStream:', error);
+				controller.error(error);
 			}
 		}
 	});
