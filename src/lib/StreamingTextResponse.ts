@@ -1,4 +1,5 @@
 import type { VectorStore } from 'langchain/vectorstores';
+import { env } from '$env/dynamic/private';
 import { makeChain } from './chain';
 
 export const StreamingTextResponse = (
@@ -10,7 +11,7 @@ export const StreamingTextResponse = (
 	const readableStream = new ReadableStream({
 		async start(controller) {
 			try {
-				const chain = makeChain(vectorstore, {
+				const chain = makeChain(vectorstore, env.OPENAI_API_KEY, {
 					handleLLMNewToken: async (token: string) => {
 						controller.enqueue(token);
 					}

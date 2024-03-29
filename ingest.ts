@@ -10,8 +10,6 @@ import appRootPath from 'app-root-path';
 import fs from 'fs-extra';
 import path from 'path';
 
-console.log(process.env);
-
 // Constants
 const VECTOR_STORE_DIR = path.join(process.env.DATA_DIR ?? appRootPath.path, 'vector');
 const DOCUMENTS_DIR = path.join(process.env.DATA_DIR ?? appRootPath.path, 'documents');
@@ -36,7 +34,7 @@ function formatDocumentSources(docs: Document<Record<string, unknown>>[]) {
 		}
 
 		source = source.replace(DOCUMENTS_DIR, '').replace(/_/g, ' ').toUpperCase();
-		const pathParts = source.split(path.sep);
+		const pathParts = source.replace(/^\//, '').split(path.sep);
 		if (pathParts.length !== 2) {
 			console.log('Error: source path does not contains 2 items:', pathParts);
 			return null;
@@ -68,7 +66,9 @@ function formatDocumentSources(docs: Document<Record<string, unknown>>[]) {
 	for (let i = 0; i < docs.length; i++) {
 		const doc = docs[i];
 		const source = getFormattedSource(doc);
-		doc.metadata['source'] = source ?? doc.metadata['source'];
+		if (source) {
+			doc.metadata['source'] = source ?? doc.metadata['source'];
+		}
 	}
 }
 

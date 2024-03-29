@@ -2,32 +2,25 @@ import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { CallbackManager } from 'langchain/callbacks';
 import type { CallbackHandlerMethods } from 'langchain/callbacks';
 import { RetrievalQAChain } from 'langchain/chains';
-import { env } from '$env/dynamic/private';
 import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { QA_PROMPT_V3 } from './prompts.templates';
-import { VECTOR_STORE_DIR } from './constants';
 import type { VectorStore } from 'langchain/vectorstores';
 
-export const loadVectorstore = () => {
-	const vectorstore = HNSWLib.load(
-		VECTOR_STORE_DIR,
-		new OpenAIEmbeddings({ openAIApiKey: env.OPENAI_API_KEY })
-	);
+export const loadVectorstore = (vectorStoreDir: string, openAIApiKey: string) => {
+	const vectorstore = HNSWLib.load(vectorStoreDir, new OpenAIEmbeddings({ openAIApiKey }));
 	console.log('loaded vectorstore');
 	return vectorstore;
 };
 
-export const makeChain = (vectorstore: VectorStore, handlers: CallbackHandlerMethods) => {
-	// const extraCallbacks = [];
-	// if (env.DEBUG) {
-	// 	console.log('Adding debug console callback');
-	// 	extraCallbacks.push(new ConsoleCallbackHandler());
-	// }
-
+export const makeChain = (
+	vectorstore: VectorStore,
+	openAiKey: string,
+	handlers: CallbackHandlerMethods
+) => {
 	const model = new ChatOpenAI({
 		temperature: 0,
-		openAIApiKey: env.OPENAI_API_KEY,
+		openAIApiKey: openAiKey,
 		modelName: 'gpt-3.5-turbo',
 		streaming: true,
 		callbacks: CallbackManager.fromHandlers(handlers)
@@ -39,7 +32,7 @@ export const makeChain = (vectorstore: VectorStore, handlers: CallbackHandlerMet
 		prompt: QA_PROMPT_V3,
 		returnSourceDocuments: true
 	});
-	console.log('Created chain');
 
+	console.log('Created chain');
 	return chain;
 };

@@ -1,7 +1,8 @@
 import { loadVectorstore } from '$/lib/chain';
 import { error, json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import db from '$lib/database';
-import { GENERIC_ERROR } from '$/lib/constants.js';
+import { GENERIC_ERROR, VECTOR_STORE_DIR } from '$/lib/constants.js';
 import { StreamingTextResponse } from '$/lib/StreamingTextResponse';
 
 export const POST = async ({ request }) => {
@@ -10,7 +11,7 @@ export const POST = async ({ request }) => {
 
 	try {
 		const question = body.question;
-		const vectorstore = await loadVectorstore();
+		const vectorstore = await loadVectorstore(VECTOR_STORE_DIR, env.OPENAI_API_KEY);
 		return StreamingTextResponse(question, vectorstore, async (answer: string) => {
 			await saveQA(question, answer);
 		});

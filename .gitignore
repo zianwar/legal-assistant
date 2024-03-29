@@ -11,3 +11,5 @@ vite.config.ts.timestamp-*
 data/
 deploy.sh
 *.db
+documents/
+vector/
